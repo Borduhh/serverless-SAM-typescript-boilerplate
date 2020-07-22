@@ -1,0 +1,23 @@
+{
+  "name": "serverless-sam-typscript-boilerplate",
+  "version": "1.0.0",
+  "description": "A boilerA boilerplate AWS SAM template using Typescript and Layers",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Borduhh/serverless-SAM-typscript-boilerplate.git"
+  },
+  "keywords": [
+    "AWS",
+    "SAM",
+    "serverless"
+  ],
+  "author": "Nick Bordeau",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Borduhh/serverless-SAM-typscript-boilerplate/issues"
+  },
+  "homepage": "https://github.com/Borduhh/serverless-SAM-typscript-boilerplate#readme"
+}
