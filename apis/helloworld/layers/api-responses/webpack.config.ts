@@ -1,14 +1,14 @@
-/* eslint-disable */
-const path = require('path');
-/* eslint-enable */
+import { resolve } from 'path';
+import { Configuration } from 'webpack';
 
 const conf = {
   prodMode: process.env.NODE_ENV === 'production',
+  templatePath: './template.yaml',
 };
 
-module.exports = {
+const config: Configuration = {
   entry: {
-    defaultApiResponses: path.resolve(__dirname, 'src', 'defaultResponses.ts'),
+    defaultApiResponses: resolve(__dirname, 'src', 'defaultResponses.ts'),
   },
   target: 'node',
   mode: conf.prodMode ? 'production' : 'development',
@@ -24,10 +24,12 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: resolve(__dirname, 'dist'),
     filename: '[name].js',
     libraryTarget: 'commonjs2',
   },
   devtool: 'source-map',
   plugins: [],
 };
+
+export default config;
