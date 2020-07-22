@@ -19,6 +19,7 @@ Resources:
       RetentionPolicy: Retain
     Metadata:
       BuildMethod: nodejs12.x
+
   GlobalApiResponsesLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
@@ -29,3 +30,18 @@ Resources:
       RetentionPolicy: Retain
     Metadata:
       BuildMethod: nodejs12.x
+
+  GreetingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handler.default
+      CodeUri: functions/greeting/dist
+      Layers:
+        - !Ref GlobalDependenciesLayer
+        - !Ref GlobalApiResponsesLayer
+      Events:
+        Hello:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: get
