@@ -7,35 +7,62 @@ import { Configuration } from 'webpack';
 const { compilerOptions } = require('./tsconfig.json');
 /* eslint-enable */
 
+/** Webpack Config Variables */
 const conf = {
   prodMode: process.env.NODE_ENV === 'production',
   templatePath: '../../template.yaml',
 };
 
 /**
- * Config for layer aliases
+ * Parsing tsconfig.json paths to resolve aliases
  */
-const tsPaths: any = {};
-
-Object.keys(compilerOptions.paths).forEach((item) => {
-  tsPaths[item] = resolve(__dirname, compilerOptions.paths[item][0]);
-});
+const tsPaths = Object.keys(compilerOptions.paths).reduce(
+  (paths, path) =>
+    Object.assign(paths, { [`${path}`]: resolve(__dirname, compilerOptions.paths[path][0]) }),
+  {}
+);
 
 /**
- * Config for YAML parsing functions
+ * Parsing template.yaml file for function dir locations
  */
-const cfn: any = yamlParse(readFileSync(conf.templatePath, 'utf-8'));
 
-const entries = Object.values(cfn.Resources)
-  .filter((resource: any) => resource.Type === 'AWS::Serverless::Function')
+/** Interface for AWS SAM Function */
+interface ISamFunction {
+  Type: string;
+  Properties: {
+    AssumeRolePolicyDocument?: JSON;
+    AutoPublishAlias?: string;
+    AutoPublishCodeSha256?: string;
+    CodeUri?: string;
+    Description?: string;
+    Environment?: {
+      Variables: {
+        [key: string]: string;
+      };
+    };
+    Events?: EventSource;
+    FunctionName?: string;
+    Handler: string;
+    Layers?: { [Ref: string]: string }[];
+    Runtime: string;
+    Timeout?: number;
+    Tracing?: string;
+    VersionDescription?: string;
+  };
+}
+
+const samConfigObj = yamlParse(readFileSync(conf.templatePath, 'utf-8'));
+
+const entries = Object.values(samConfigObj.Resources)
+  .filter((resource: ISamFunction) => resource.Type === 'AWS::Serverless::Function')
   .filter(
-    (resource: any) =>
+    (resource: ISamFunction) =>
       (resource.Properties.Runtime && resource.Properties.Runtime.startsWith('nodejs')) ||
       (!resource.Properties.Runtime &&
-        cfn.Globals.Function.Runtime &&
-        cfn.Globals.Function.Runtime.startsWith('nodejs'))
+        samConfigObj.Globals.Function.Runtime &&
+        samConfigObj.Globals.Function.Runtime.startsWith('nodejs'))
   )
-  .map((resource: any) => ({
+  .map((resource: ISamFunction) => ({
     sourceFile: resource.Properties.Handler.split('.')[0],
     CodeUriDir: resource.Properties.CodeUri.split('/').splice(3).join('/'),
   }))
@@ -48,9 +75,9 @@ const entries = Object.values(cfn.Resources)
   );
 
 /**
- * Webpack configuration
+ * Webpack Config
  */
-const config: Configuration = {
+const webpackConfig: Configuration = {
   entry: entries,
   target: 'node',
   mode: conf.prodMode ? 'production' : 'development',
@@ -75,4 +102,4 @@ const config: Configuration = {
   plugins: [],
 };
 
-export default config;
+export default webpackConfig;
