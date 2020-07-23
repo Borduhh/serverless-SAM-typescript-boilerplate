@@ -51,25 +51,26 @@ interface ISamFunction {
   };
 }
 
-const samConfigObj = yamlParse(readFileSync(conf.templatePath, 'utf-8'));
+const { resources } = yamlParse(readFileSync(conf.templatePath, 'utf-8'));
 
-const entries = Object.values(samConfigObj.Resources)
+const entries = Object.values(resources)
+
   .filter((resource: ISamFunction) => resource.Type === 'AWS::Serverless::Function')
+
   .filter(
     (resource: ISamFunction) =>
-      (resource.Properties.Runtime && resource.Properties.Runtime.startsWith('nodejs')) ||
-      (!resource.Properties.Runtime &&
-        samConfigObj.Globals.Function.Runtime &&
-        samConfigObj.Globals.Function.Runtime.startsWith('nodejs'))
+      resource.Properties.Runtime && resource.Properties.Runtime.startsWith('nodejs')
   )
+
   .map((resource: ISamFunction) => ({
-    sourceFile: resource.Properties.Handler.split('.')[0],
-    CodeUriDir: resource.Properties.CodeUri.split('/').splice(3).join('/'),
+    filename: resource.Properties.Handler.split('.')[0],
+    entryPath: resource.Properties.CodeUri.split('/').splice(3).join('/'),
   }))
+
   .reduce(
     (resources, resource) =>
       Object.assign(resources, {
-        [`${resource.CodeUriDir}/${resource.sourceFile}`]: `./src/${resource.CodeUriDir}${resource.sourceFile}.ts`,
+        [`${resource.filename}`]: `./src/${resource.entryPath}${resource.filename}.ts`,
       }),
     {}
   );

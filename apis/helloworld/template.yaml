@@ -5,7 +5,6 @@ Description: hellword-api
 
 Globals:
   Function:
-    Runtime: nodejs12.x
     Timeout: 60
 
 Resources:
@@ -39,6 +38,7 @@ Resources:
       Layers:
         - !Ref GlobalDependenciesLayer
         - !Ref GlobalApiResponsesLayer
+      Runtime: nodejs12.x
       Events:
         Hello:
           Type: Api
