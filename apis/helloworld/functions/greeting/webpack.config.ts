@@ -22,7 +22,7 @@ Object.keys(compilerOptions.paths).forEach((item) => {
 });
 
 /**
- * Config for parsing functions
+ * Config for YAML parsing functions
  */
 const cfn: any = yamlParse(readFileSync(conf.templatePath, 'utf-8'));
 
@@ -47,6 +47,9 @@ const entries = Object.values(cfn.Resources)
     {}
   );
 
+/**
+ * Webpack configuration
+ */
 const config: Configuration = {
   entry: entries,
   target: 'node',
