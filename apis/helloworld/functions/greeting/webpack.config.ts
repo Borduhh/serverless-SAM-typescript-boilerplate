@@ -51,7 +51,7 @@ interface ISamFunction {
   };
 }
 
-const { resources } = yamlParse(readFileSync(conf.templatePath, 'utf-8'));
+const { Resources: resources } = yamlParse(readFileSync(conf.templatePath, 'utf-8'));
 
 const entries = Object.values(resources)
 
