@@ -51,9 +51,9 @@ interface ISamFunction {
   };
 }
 
-const { resources } = yamlParse(readFileSync(conf.templatePath, 'utf-8'));
+const { Resources } = yamlParse(readFileSync(conf.templatePath, 'utf-8'));
 
-const entries = Object.values(resources)
+const entries = Object.values(Resources)
 
   .filter((resource: ISamFunction) => resource.Type === 'AWS::Serverless::Function')
 
